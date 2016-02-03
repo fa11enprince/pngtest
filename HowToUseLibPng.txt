@@ -1,0 +1,283 @@
+Libpng使い方 For Visual Studio 2012(VC++)
+
+2013/12/29日現在
+必要なもの
+Visual Studio 2012(他バージョンでも可だけど今回はこれで説明)
+zlib
+libpng
+
+手順１ ダウンロード＆展開
+zlibをダウンロードする。
+http://www.zlib.net/
+バージョン1.2.8
+The current release is publicly available here:
+zlib source code, version 1.2.8, zipfile format
+を使う。
+
+libpngをダウンロードする。
+http://www.libpng.org/pub/png/libpng.html
+バージョン1.6.7
+Source code:
+prodownloads.sourceforge.netのzip版を選ぶ。
+
+ダウンロードしたら、解凍する。
+
+こんな感じの構成になっている。
+zlib
+$ tree -L 1 zlib-1.2.8/
+zlib-1.2.8/
+├── adler32.c
+├── amiga
+├── as400
+├── ChangeLog
+├── CMakeLists.txt
+├── compress.c
+├── configure
+├── contrib
+├── crc32.c
+├── crc32.h
+├── deflate.c
+├── deflate.h
+├── doc
+├── examples
+├── FAQ
+├── gzclose.c
+├── gzguts.h
+├── gzlib.c
+├── gzread.c
+├── gzwrite.c
+├── INDEX
+├── infback.c
+├── inffast.c
+├── inffast.h
+├── inffixed.h
+├── inflate.c
+├── inflate.h
+├── inftrees.c
+├── inftrees.h
+├── make_vms.com
+├── Makefile
+├── Makefile.in
+├── msdos
+├── nintendods
+├── old
+├── qnx
+├── README
+├── test
+├── treebuild.xml
+├── trees.c
+├── trees.h
+├── uncompr.c
+├── watcom
+├── win32
+├── zconf.h
+├── zconf.h.cmakein
+├── zconf.h.in
+├── zlib.3
+├── zlib.3.pdf
+├── zlib.h
+├── zlib.map
+├── zlib.pc.cmakein
+├── zlib.pc.in
+├── zlib2ansi
+├── zutil.c
+└── zutil.h
+
+12 directories, 44 files
+
+
+libpng
+$ tree -L 1 lpng167/
+lpng167/
+├── ANNOUNCE
+├── CHANGES
+├── CMakeLists.txt
+├── configure
+├── contrib
+├── example.c
+├── INSTALL
+├── libpng.3
+├── libpng.pc.in
+├── libpng-config.in
+├── libpng-manual.txt
+├── libpngpf.3
+├── LICENSE
+├── png.5
+├── png.c
+├── png.h
+├── pngbar.jpg
+├── pngbar.png
+├── pngconf.h
+├── pngdebug.h
+├── pngerror.c
+├── pngget.c
+├── pnginfo.h
+├── pngmem.c
+├── pngnow.png
+├── pngpread.c
+├── pngpriv.h
+├── pngread.c
+├── pngrio.c
+├── pngrtran.c
+├── pngrutil.c
+├── pngset.c
+├── pngstruct.h
+├── pngtest.c
+├── pngtest.png
+├── pngtrans.c
+├── pngwio.c
+├── pngwrite.c
+├── pngwtran.c
+├── pngwutil.c
+├── projects
+├── README
+├── scripts
+└── TODO
+
+3 directories, 41 files
+
+手順２ ビルドしてスタティックライブラリを作成。
+テキトーにディレクトリを作ります。
+マイドキュメントでもどこでもいいのでテキトーにディレクトリを作ります。
+
+私はVisualStudioの標準プロジェクト置き場の
+C:\Users\[ユーザ名]\Documents\Visual Studio 2012\Projects\
+でCygwin上でやります。
+エクスプローラーの場合は日本語で書いてあることを実施すればOKです。
+こいつを作業用ディレクトリlibpingとします。
+
+作業用ディレクトリを作る。
+$ mkdir libping
+それぞれlibpng zlibにコピーしてリネームします。
+$ cp -pr lpng167 libpng
+$ cp -pr zlib-1.2.8 zlib
+libpngとzlibをlibpingフォルダに移動します。
+$ mv libpng zlib libping
+$ ls libping
+libpng  zlib
+libping/libpng/projects/vstudioにzlib.propsというファイルがあるのでこいつを書き換えます。
+$ cd libping/libpng/projects/vstudio
+$ ls
+libpng      pngstest  pngunknown  readme.txt   WARNING  zlib.props
+pnglibconf  pngtest   pngvalid    vstudio.sln  zlib
+zlib.propsをサクラエディタかなんかで開いてあげてください。
+<ZLibSrcDir>..\..\..\..\zlib1.2.5</ZLibSrcDir>
+とかかれている行があるので、
+これを書き換えます。
+いまの構成だと3個上がったところと同じ階層にzlibがあるのでこうします。
+<ZLibSrcDir>..\..\..\..\zlib</ZLibSrcDir>
+
+libping/libpng/projects/vstudio
+にvstudio.slnがあるのでダブルクリックしてVSを立ち上げます。
+
+VC++プロジェクトを更新します。とかなんとか出てくるので更新します。
+ソリューション構成はDebug Libraryを選んでビルドします。
+上のほうにあるコンボボックスにあるあれです。
+ソリューションのビルドをします。
+========== ビルド: 7 正常終了、0 失敗、0 更新不要、0 スキップ ==========
+となればOKです。
+次にRelease Libraryを選択します。
+またビルドします。
+
+これでほかのプロジェクトでライブラリを使う場合は
+
+[ヘッダー]
+libping\libpngにある
+png.h
+pngconf.h
+pngdebug.h
+pnginfo.h
+pnglibconf.h
+pngpriv.h
+pngstruct.h
+と
+zlib\libpngにある
+zconf.h
+zlib.h
+と、
+[ライブラリ]
+libping\libpng\projects\vstudio\Debug Library
+libping\libpng\projects\vstudio\Release Library
+にある
+libpng.lib
+zlib.lib
+をソリューション構成に入れてやればOK
+
+っていうかこれを配ってくれよ…と少し思ったり。
+
+
+３．自作プログラムに組み込むために配置する。
+
+Cドライブの直下にlibpingなどとディレクトリを作ってやり
+以下のような構成でとりあえず老いておく。
+
+C:\libping
+├── png.h
+├── pngconf.h
+├── pngdebug.h
+├── pnginfo.h
+├── pnglibconf.h
+├── pngpriv.h
+├── pngstruct.h
+├── zconf.h
+├── zlib.h
+├── Debug
+│   ├── libpng16.lib
+│   └── zlib.lib
+└── Release
+     ├── libpng16.lib
+     └── zlib.lib
+
+
+<<構成プロパティの設定>>
+基本的にlibpngのプロジェクト設定に合わせる必要があります。
+
+[Debug]
+全般
+	マルチバイト文字セットを使用する
+C/C++ > 全般
+	追加のインクルードディレクトリ C:\libping
+C/C++ > コード生成
+	ランタイムライブラリ マルチスレッドデバッグ /MTd
+リンカー > 全般
+	追加のライブラリ ディレクトリ C:\libping\Debug
+	インクリメンタルリンクを有効にする いいえ
+リンカー > 入力
+	追加の依存ファイル zlib.lib;libpng16.lib
+
+
+[Release]
+全般
+	マルチバイト文字セットを使用する
+C/C++ > 全般
+	追加のインクルードディレクトリ C:\libping
+C/C++ > コード生成
+	ランタイムライブラリ マルチスレッド /MT
+リンカー > 全般
+	追加のライブラリ ディレクトリ C:\libping\Release
+	インクリメンタルリンクを有効にする いいえ
+リンカー > 入力
+	追加の依存ファイル zlib.lib;libpng16.lib
+リンカー > 最適化
+	リンク時のコード生成 リンク時のコード生成を使用
+
+プロジェクトのカレントワーキングディレクトリ(作業ディレクトリ)となるところになにか画像を置く。
+今回の場合だと、
+Projects\(プロジェクト名)\(プロジェクト名)
+のところにテキトーなpngファイルを置く(ファイル名はv01.pngとしました)。
+
+４．ソースを書いてビルドする。
+
+pngtestプロジェクトを作成する。
+ソースはここ Github
+もしかしたらソースはバグってるかもしれません。
+今回使ったライブラリ以外ではWindows APIのみを使っています。
+
+とここまで頑張ったのですが、もっとかんたんなWrapperが既にあるようだったり、
+WindowsだとGDI+でPNGを読めるとか……。
+
+[参考]
+http://ameblo.jp/wisser/entry-11636912462.html
+http://hp.vector.co.jp/authors/VA016379/cpplib/libpng.htm
+http://blog.livedoor.jp/hiroshi0945-multimedia/archives/1564786.html
+http://dixq.net/forum/viewtopic.php?f=3&t=9406
